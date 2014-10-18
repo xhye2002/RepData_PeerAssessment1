@@ -4,11 +4,11 @@ Reproducible Reserach: Peer Assessment 1
 ```{r}
 opts_chunk$set(echo = TRUE)
 library(lattice)
+library(knitr)
 ```
 ## Loading and preprocessing the data
 ```{r}
-rawdata<-read.csv("activity.csv")
-
+rawdata<-read.csv("activity.csv", header = TRUE)
 ```
 ## What is mean total number of steps taken per day?
 
@@ -19,7 +19,7 @@ data<-rawdata[!is.na(rawdata$steps), ]
 stepAgg<-aggregate(steps~date, data, sum)
 xLabels<-seq(1, nrow(stepAgg), by = 12)
 scalesList<-list(x = list(labels = stepAgg$date, at = xLabels))
-barchart(steps~date, stepAgg, scales=scalesList)
+barchart(steps~date, stepAgg, scales=scalesList, main="Total steps each day", xlab = "date")
 ```
 
 2.Calcuate and report the mean and median total number of steps taken per day
@@ -68,7 +68,7 @@ filledData<-rawdata
 stepAgg<-aggregate(steps~date, filledData, sum)
 xLabels<-seq(1, nrow(stepAgg), by = 12)
 scalesList<-list(x = list(labels = stepAgg$date, at = xLabels))
-barchart(steps~date, stepAgg, scales=scalesList)
+barchart(steps~date, stepAgg, scales=scalesList, main="total steps each day", xlab="date")
 ```
 
 Calculate and report the **mean** and **median** total number of steps taken per day
@@ -92,19 +92,15 @@ across days.
 
 1.create a new factor variable in dataset with two levels--"weekday" and "weekend" indicating whether a given day is a weekday or weekend day.
 ```{r}
-days<-!(weekdays(as.Date(filledData$date)) %in% c('Saturday','Sunday'))
-wday<-c("weekend", "weekday")
+days<-(weekdays(as.Date(filledData$date)) %in% c('Saturday','Sunday'))
+wday<-c("weekday", "weekend")
 f<-factor(days, labels = wday)
 ```
 
 2.Make a panel plot containing a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).
 ```{r}
-tdata<-transform(filledData, weekday = f)
-aggWeekday<-aggregate(steps~interval, tdata[f==wday[2],], mean)
-aggWeekend<-aggregate(steps~interval, tdata[f==wday[1],], mean)
-numRows<-nrow(aggWeekday);
-aggWeekday<-transform(aggWeekday, day = rep(wday[2], numRows))
-aggWeekend<-transform(aggWeekend, day = rep(wday[1], numRows))
-aggData<-rbind(aggWeekday, aggWeekend);
+tdata<-transform(filledData, day = f)
+aggData<-aggregate(tdata$steps, by=list(tdata$interval, tdata$day), mean)
+names(aggData)<-c("interval", "day", "steps")
 xyplot(steps~interval | day, aggData, type="l", layout=c(1, 2), xlab="Interval", ylab="Number of steps")
 ```
