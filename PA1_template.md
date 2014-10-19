@@ -1,5 +1,5 @@
 
-Reproducible Reserach: Peer Assessment 1
+Reproducible Research: Peer Assessment 1
 ==============================================
 
 ```r
@@ -11,6 +11,7 @@ library(knitr)
 
 ```r
 rawdata<-read.csv("activity.csv", header = TRUE)
+rawdata$date<-as.Date(rawdata$date)
 ```
 ## What is mean total number of steps taken per day?
 
@@ -20,14 +21,14 @@ rawdata<-read.csv("activity.csv", header = TRUE)
 ```r
 data<-rawdata[!is.na(rawdata$steps), ]  
 stepAgg<-aggregate(steps~date, data, sum)
-xLabels<-seq(1, nrow(stepAgg), by = 12)
+xLabels<-seq.Date(min(data$date), max(data$date), length.out = 6)
 scalesList<-list(x = list(labels = stepAgg$date, at = xLabels))
-barchart(steps~date, stepAgg, scales=scalesList, main="Total steps each day", xlab = "date")
+barchart(steps~date, stepAgg, scales = scalesList, horizontal = FALSE, main="Total steps each day", xlab = "date")
 ```
 
 ![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
 
-2.Calcuate and report the mean and median total number of steps taken per day
+2.Calculate and report the mean and median total number of steps taken per day
 
 ```r
 mean(stepAgg$steps)
@@ -67,7 +68,7 @@ intervalAgg[row,]$interval
 ```
 
 ## Inputing missing values
-1.Calcuate and report total number of missing values in dataset
+1.Calculate and report total number of missing values in dataset
 
 ```r
 sum(is.na(rawdata$steps))
@@ -81,7 +82,7 @@ sum(is.na(rawdata$steps))
 
 Use the mean for that interval across days to fill the missing value in the dataset.
 
-3.create a new dataset that is equal to the origianl dataset but with the missing data filled in
+3.create a new dataset that is equal to the original dataset but with the missing data filled in
 
 
 ```r
@@ -97,9 +98,9 @@ filledData<-rawdata
 
 ```r
 stepAgg<-aggregate(steps~date, filledData, sum)
-xLabels<-seq(1, nrow(stepAgg), by = 12)
+xLabels<-seq.Date(min(data$date), max(data$date), length.out = 6)
 scalesList<-list(x = list(labels = stepAgg$date, at = xLabels))
-barchart(steps~date, stepAgg, scales=scalesList, main="total steps each day", xlab="date")
+barchart(steps~date, stepAgg, scales=scalesList, horizontal = FALSE, main="total steps each day", xlab="date")
 ```
 
 ![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png) 
